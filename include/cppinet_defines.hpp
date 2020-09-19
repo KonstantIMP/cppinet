@@ -26,11 +26,11 @@ namespace KonstantIMP {
     class host_info;
 
     /**
-     * @brief This class describes an internet adress.
+     * @brief This class describes an internet address.
      *
      * It is an abstract class, because it must be other for every connection type
      */
-    class adress;
+    class addess;
 
     /**
      * @brief This class describes a socket abstraction.
@@ -70,6 +70,45 @@ namespace KonstantIMP {
         SEQPACKET_SOCKET = SOCK_SEQPACKET   ///>
     };
 
+    /**
+     * @brief The IP_PROTOCOLS enum
+     */
+    enum IP_PROTOCOL : std::uint32_t {
+        IP_AH       = IPPROTO_AH,
+        IP_BEETPH   = IPPROTO_BEETPH,
+        IP_COMP     = IPPROTO_COMP,
+        IP_DCCP     = IPPROTO_DCCP,
+        IP_DSPOPTS  = IPPROTO_DSTOPTS,
+        IP_EGP      = IPPROTO_EGP,
+        IP_ENCAP    = IPPROTO_ENCAP,
+        IP_ESP      = IPPROTO_ESP,
+        EP_ETHERNET = IPPROTO_ETHERNET,
+        IP_FRAGMENT = IPPROTO_FRAGMENT,
+        IP_GRE      = IPPROTO_GRE,
+        IP_HOPOPTS  = IPPROTO_HOPOPTS,
+        IP_ICMP     = IPPROTO_ICMP,
+        IP_ICMPV6   = IPPROTO_ICMPV6,
+        IP_IDP      = IPPROTO_IDP,
+        IP_IGMP     = IPPROTO_IGMP,
+        IP_IP       = IPPROTO_IP,
+        IP_IPIP     = IPPROTO_IPIP,
+        IP_IPV6     = IPPROTO_IPV6,
+        IP_MH       = IPPROTO_MH,
+        IP_MPLS     = IPPROTO_MPLS,
+        IP_MPTCP    = IPPROTO_MPTCP,
+        IP_MTP      = IPPROTO_MTP,
+        IP_NONE     = IPPROTO_NONE,
+        IP_PIM      = IPPROTO_PIM,
+        IP_PUP      = IPPROTO_PUP,
+        IP_RAW      = IPPROTO_RAW,
+        IP_ROUTING  = IPPROTO_ROUTING,
+        IP_RSVP     = IPPROTO_RSVP,
+        IP_SCTP     = IPPROTO_SCTP,
+        IP_TCP      = IPPROTO_TCP,
+        IP_TP       = IPPROTO_TP,
+        IP_UDP      = IPPROTO_UDP,
+        IP_UDPLIT   = IPPROTO_UDPLITE
+    };
 
     /**
      * @brief Connections families enumeration
@@ -125,7 +164,7 @@ namespace KonstantIMP {
         SECURITY_SOCKET   = AF_SECURITY,     ///>
         APPLETALK_SOCKET  = AF_APPLETALK,    ///>
         BLUETOOTH_SOCKET  = AF_BLUETOOTH,    ///>
-        IEEE802154_SOCKET = AF_IEEE802154    ///>    
+        IEEE802154_SOCKET = AF_IEEE802154,   ///>
     };
 
     #elif  // __linux

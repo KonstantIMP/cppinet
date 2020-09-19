@@ -1,6 +1,11 @@
 #ifndef  HOST_INFO_HPP
 #define  HOST_INFO_HPP
 
+/**
+ * @file port.hpp
+ * @author KonstantIMP
+ */
+
 #include "cppinet_defines.hpp"
 
 #ifdef   __linux

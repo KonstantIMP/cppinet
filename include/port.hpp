@@ -1,9 +1,12 @@
-#include "cppinet_defines.hpp"
+#ifndef PORT_HPP
+#define PORT_HPP
 
 /**
  * @file port.hpp
  * @author KonstantIMP
  */
+
+#include "cppinet_defines.hpp"
 
 #ifdef    __linux
 
@@ -120,3 +123,5 @@ private:
 };
 
 }
+
+#endif //PORT_HPP

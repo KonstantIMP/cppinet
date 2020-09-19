@@ -30,4 +30,4 @@ if(NOT CMAKE_CXX_EXTENSIONS)
     set(CMAKE_CXX_EXTENSIONS OFF)
 endif()
 
-add_executable(cppinet src/main.cpp src/port.cpp include/port.hpp src/host_info.cpp include/host_info.hpp include/dns.hpp src/dns.cpp include/cppinet_defines.hpp)
+add_executable(cppinet src/main.cpp src/port.cpp include/port.hpp src/host_info.cpp include/host_info.hpp include/dns.hpp src/dns.cpp include/address.hpp src/address.cpp include/cppinet_defines.hpp)
