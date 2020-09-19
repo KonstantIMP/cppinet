@@ -34,7 +34,12 @@ host_info dns::get_host_by_name(const std::string & name) {
 host_info dns::get_host_by_addr(const std::string & addr, const CONNECTION_FAMILY & con_fam) {
     #ifdef    __linux
 
-    hostent * searched_host = gethostbyaddr(addr.c_str(), static_cast<socklen_t>(addr.length()), static_cast<int>(con_fam));
+    if(con_fam != IPV4_SOCKET) throw dns_err("DNS probes avalible only for IPv4 connections family");
+
+    in_addr ip;
+    if(!inet_aton(addr.c_str(), & ip)) throw std::runtime_error("Can\'t parse \"" + addr + "\" address");
+
+    hostent * searched_host = gethostbyaddr(reinterpret_cast<void *>(&ip), static_cast<socklen_t>(sizeof(in_addr)), static_cast<int>(con_fam));
 
     if(searched_host == nullptr) {
         switch (h_errno) {

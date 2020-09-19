@@ -5,6 +5,7 @@
 #include "host_info.hpp"
 
 #include <exception>
+#include <stdexcept>
 #include <string>
 
 namespace KonstantIMP {
