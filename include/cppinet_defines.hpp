@@ -30,7 +30,7 @@ namespace KonstantIMP {
      *
      * It is an abstract class, because it must be other for every connection type
      */
-    class addess;
+    class address;
 
     /**
      * @brief This class describes a socket abstraction.

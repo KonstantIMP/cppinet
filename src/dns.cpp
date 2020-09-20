@@ -1,5 +1,7 @@
 #include "../include/dns.hpp"
 
+#include <set>
+
 #ifdef    __linux
 
 extern int h_errno;
@@ -10,19 +12,12 @@ extern int h_errno;
 
 namespace KonstantIMP {
 
-addess * dns::get_address_by_name(const std::string & name, const CONNECTION_FAMILY & con_fam,
-                                  const SOCKET_TYPE & sock_type, const IP_PROTOCOL & ipproto) {
+std::vector<std::shared_ptr<address>> dns::get_address_by_name(const std::string & name) {
     #ifdef    __linux
 
     addrinfo * result;
 
-    addrinfo hints;
-    hints.ai_flags = AI_NUMERICHOST;
-    /*hints.ai_family = static_cast<int>(con_fam);
-    hints.ai_socktype = static_cast<int>(sock_type);
-    hints.ai_protocol = static_cast<int>(ipproto);*/
-
-    int error = getaddrinfo(name.c_str(), nullptr, &hints, &result);
+    int error = getaddrinfo(name.c_str(), nullptr, nullptr, &result);
 
     if(error) {
         freeaddrinfo(result);
@@ -32,7 +27,7 @@ addess * dns::get_address_by_name(const std::string & name, const CONNECTION_FAM
             case EAI_SOCKTYPE : throw  dns_err('\"' + name + "\" has unsopported socket type"); break;
             case EAI_BADFLAGS : throw  dns_err("cppinet error. Incorrect flags"); break;
             case EAI_NONAME : throw dns_err("cppinet error. Incorrect node or hints"); break;
-            case EAI_SERVICE : throw dns_err('\"' + name + "\" usupportde for " + std::to_string(sock_type) + " socket type"); break;
+            case EAI_SERVICE : throw dns_err('\"' + name + "\" usupportde for " + std::to_string(result->ai_socktype) + " socket type"); break;
             case EAI_ADDRFAMILY : throw  dns_err('\"' + name + "\" doesn\'t have addresses in used family"); break;
             case EAI_NODATA : throw dns_err('\"' + name + "\" exists in DNS, but doesn\'t nave IP address"); break;
             case EAI_MEMORY : throw dns_err("Can\'t allocate memory for DNS work"); break;
@@ -43,9 +38,41 @@ addess * dns::get_address_by_name(const std::string & name, const CONNECTION_FAM
         }
     }
 
-    sockaddr_in a = *reinterpret_cast<sockaddr_in *>(result->ai_addr);
+    std::vector<std::shared_ptr<address>> ip_addr;
 
-    //return reinterpret_cast<addess *>(new ipv4_address(a));
+    if(result->ai_family == static_cast<int>(IPV4_SOCKET)) {
+        addrinfo * tmp = result->ai_next;
+        while (tmp != nullptr) {
+            ip_addr.push_back(std::shared_ptr<address>(new ipv4_address(inet_ntoa(reinterpret_cast<sockaddr_in *>(tmp->ai_addr)->sin_addr), port(80), IPV4_SOCKET)));
+            tmp = tmp->ai_next;
+        }
+
+        std::shared_ptr<address> zero = std::shared_ptr<address>(new ipv4_address("0.0.0.0", port(80), IPV4_SOCKET));
+        for(std::size_t i{ip_addr.size() - 1}; i > 0; i--) {
+            if(ip_addr.at(i)->operator==(zero.get())) {
+                auto iter = ip_addr.begin();
+                for(std::size_t j{0}; j < i; j++) {iter++;}
+                ip_addr.erase(iter);
+            }
+        }
+
+        //ip_addr.at(0).swap(ip_addr.at(ip_addr.size() - 1));
+
+        freeaddrinfo(result);
+    }
+    else {
+
+    }
+
+    for(std::size_t i{ip_addr.size() - 1}; i > 0; i--) {
+        if(ip_addr.at(i)->operator==(ip_addr.at(i - 1).get())) {
+            auto iter = ip_addr.begin();
+            for(std::size_t j{0}; j < i; j++) {iter++;}
+            ip_addr.erase(iter);
+        }
+    }
+
+    return ip_addr;
 
     #elif  // __linux
 

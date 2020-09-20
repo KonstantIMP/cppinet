@@ -7,11 +7,15 @@
 
 
 int main() {
-    KonstantIMP::address * a = new KonstantIMP::ipv4_address("127.0.0.1", KonstantIMP::port(752));
+    auto a = KonstantIMP::dns::get_address_by_name("google.com");
 
-    sockaddr_in b = *reinterpret_cast<sockaddr_in *>(a->get_sys_addr().get());
+    std::cout << "google.com\n";
 
-    std::cout << inet_ntoa(b.sin_addr);
+    for(auto & iter : a) {
+        KonstantIMP::ipv4_address c(iter.get());
+
+        std::cout << '\t' << c.get_ip_address() << '\n';
+    }
 
     //KonstantIMP::dns::get_address_by_name("google.com", KonstantIMP::IPV4_SOCKET);
 

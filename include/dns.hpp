@@ -12,6 +12,8 @@
 
 #include <exception>
 #include <stdexcept>
+
+#include <memory>
 #include <string>
 
 namespace KonstantIMP {
@@ -47,14 +49,11 @@ public:
      *
      * @param[in] name The host name
      *
-     * @param[in] con_fam Priarity connection family
-     *
      * @throw dns_err if name hasn't found in DNS
      * 
      * @return The host_info for the searched name.
      */
-    static addess * get_address_by_name(const std::string & name, const CONNECTION_FAMILY & con_fam = UNSPEC_SOCKET,
-                                   const SOCKET_TYPE & sock_type = STREAM_SOCKET, const IP_PROTOCOL & ipproto = IP_TCP);
+    static std::vector<std::shared_ptr<address>> get_address_by_name(const std::string & name);
 
     /**
      * @brief Gets the host by address.

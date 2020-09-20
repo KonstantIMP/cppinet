@@ -14,6 +14,18 @@ std::size_t address::get_sys_addr_size() const {
 
 
 
+ipv4_address::ipv4_address(const address *parent) : address(), ip_address(""), con_port(port(80)) {
+    con_fam = IPV4_SOCKET;
+
+    #ifdef   __linux
+    sys_addr_size = sizeof (sockaddr_in);
+
+    ip_address = inet_ntoa(reinterpret_cast<sockaddr_in *>(parent->get_sys_addr().get())->sin_addr);
+    #elif  //__linux
+
+    #endif //__linux
+}
+
 ipv4_address::ipv4_address(const std::string & ip, const port & p, const CONNECTION_FAMILY & cf) :
     address(), ip_address(ip), con_port(p) {
     con_fam = cf;
@@ -22,7 +34,7 @@ ipv4_address::ipv4_address(const std::string & ip, const port & p, const CONNECT
     sys_addr_size = sizeof (sockaddr_in);
     #elif  //__linux
 
-#endif //__linux
+    #endif //__linux
 }
 
 void ipv4_address::set_ip_address(const std::string & ip) {
@@ -57,8 +69,15 @@ std::shared_ptr<char> ipv4_address::get_sys_addr() const {
 
     #elif  //__linux
 
-    #endif //__linux
+#endif //__linux
 }
 
+bool ipv4_address::operator==(const ipv4_address & equal) const {
+    return (this->ip_address == equal.ip_address) && (this->con_port == equal.con_port) && (this->con_fam == equal.con_fam);
+}
+
+bool ipv4_address::operator==(const address * equal) const {
+    return this->operator==(ipv4_address(equal));
+}
 
 }

@@ -39,6 +39,8 @@ public:
 
     virtual std::shared_ptr<char> get_sys_addr() const = 0;
 
+    virtual bool operator==(const address * equal) const = 0;
+
 protected:
     CONNECTION_FAMILY con_fam;
 
@@ -47,7 +49,9 @@ protected:
 
 class ipv4_address : public address {
 public:
+    ipv4_address(const address * parent);
     ipv4_address(const std::string & ip, const port & p = port(80), const CONNECTION_FAMILY & cf = IPV4_SOCKET);
+
     virtual ~ipv4_address() {};
 
     void set_ip_address(const std::string & ip);
@@ -57,6 +61,9 @@ public:
     port get_port() const;
 
     virtual std::shared_ptr<char> get_sys_addr() const;
+
+    bool operator==(const ipv4_address & equal) const;
+    virtual bool operator==(const address * equal) const;
 
 private:
     std::string ip_address;
