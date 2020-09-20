@@ -53,7 +53,7 @@ public:
      * 
      * @return The host_info for the searched name.
      */
-    static addess get_address_by_name(const std::string & name, const CONNECTION_FAMILY & con_fam = UNSPEC_SOCKET,
+    static addess * get_address_by_name(const std::string & name, const CONNECTION_FAMILY & con_fam = UNSPEC_SOCKET,
                                    const SOCKET_TYPE & sock_type = STREAM_SOCKET, const IP_PROTOCOL & ipproto = IP_TCP);
 
     /**

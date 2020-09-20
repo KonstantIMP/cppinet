@@ -10,17 +10,17 @@ extern int h_errno;
 
 namespace KonstantIMP {
 
-addres dns::get_address_by_name(const std::string & name, const CONNECTION_FAMILY & con_fam,
-                                const SOCKET_TYPE & sock_type, const IP_PROTOCOL & ipproto) {
+addess * dns::get_address_by_name(const std::string & name, const CONNECTION_FAMILY & con_fam,
+                                  const SOCKET_TYPE & sock_type, const IP_PROTOCOL & ipproto) {
     #ifdef    __linux
 
     addrinfo * result;
 
     addrinfo hints;
     hints.ai_flags = AI_NUMERICHOST;
-    hints.ai_family = static_cast<int>(con_fam);
+    /*hints.ai_family = static_cast<int>(con_fam);
     hints.ai_socktype = static_cast<int>(sock_type);
-    hints.ai_protocol = static_cast<int>(ipproto);
+    hints.ai_protocol = static_cast<int>(ipproto);*/
 
     int error = getaddrinfo(name.c_str(), nullptr, &hints, &result);
 
@@ -43,20 +43,9 @@ addres dns::get_address_by_name(const std::string & name, const CONNECTION_FAMIL
         }
     }
 
+    sockaddr_in a = *reinterpret_cast<sockaddr_in *>(result->ai_addr);
 
-
-    /*hostent * searched_host = gethostbyname(name.c_str());
-
-    if(searched_host == nullptr) {
-        switch (h_errno) {
-            case HOST_NOT_FOUND : throw dns_err("The \"" + name + "\" not found in DNS"); break;
-            case NO_ADDRESS : throw dns_err('\"' + name + "\" exists in DNS, but doesn\'t nave IP address"); break;
-            case NO_RECOVERY : throw  dns_err("DNS-server critical ERROR"); break;
-            case TRY_AGAIN : throw  dns_err("A temporary DNS-server ERROR. Try again later"); break;
-            default: throw dns_err("Unspec error"); break;
-        }
-    }
-    else return host_info(searched_host);*/
+    //return reinterpret_cast<addess *>(new ipv4_address(a));
 
     #elif  // __linux
 

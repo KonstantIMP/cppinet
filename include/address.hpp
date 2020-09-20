@@ -7,28 +7,37 @@
  */
 
 #include "cppinet_defines.hpp"
-
 #include "port.hpp"
 
 #ifdef    __linux
 
 #include <sys/types.h>
+#include <arpa/inet.h>
+#include <netdb.h>
 
 #elif  // __linux
 
 #endif // __linux
+
+#include <exception>
+#include <stdexcept>
+
+#include <cstring>
+#include <string>
+#include <memory>
 
 namespace KonstantIMP {
 
 class address {
 public:
     address();
+    virtual ~address() {};
 
     CONNECTION_FAMILY get_con_fam() const;
 
     std::size_t get_sys_addr_size() const;
 
-    virtual void * get_sys_addr() const = 0;
+    virtual std::shared_ptr<char> get_sys_addr() const = 0;
 
 protected:
     CONNECTION_FAMILY con_fam;
@@ -38,28 +47,19 @@ protected:
 
 class ipv4_address : public address {
 public:
+    ipv4_address(const std::string & ip, const port & p = port(80), const CONNECTION_FAMILY & cf = IPV4_SOCKET);
+    virtual ~ipv4_address() {};
 
-    #ifdef    __linux
-    ipv4_address(const sockaddr_in & addr, const port & p = port(80));
-
-    void set_sys_addr(const sockaddr_in & addr);
-
-    sockaddr_in get_system_addr() const;
-    #elif  // __linux
-
-    #endif // __linux
+    void set_ip_address(const std::string & ip);
+    std::string get_ip_address() const;
 
     void set_port(const port & p);
     port get_port() const;
 
-    virtual void * get_sys_addr() const;
+    virtual std::shared_ptr<char> get_sys_addr() const;
 
 private:
-    #ifdef    __linux
-    sockaddr_in sys_addr;
-    #elif  // __linux
-
-    #endif // __linux
+    std::string ip_address;
 
     port con_port;
 };
