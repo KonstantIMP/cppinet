@@ -35,7 +35,7 @@ public:
 
     CONNECTION_FAMILY get_con_fam() const;
 
-    std::size_t get_sys_addr_size() const;
+    virtual std::size_t get_sys_addr_size() const;
 
     virtual std::shared_ptr<char> get_sys_addr() const = 0;
 

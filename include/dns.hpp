@@ -64,7 +64,7 @@ public:
      * 
      * @return The host_info for the searched address.
      */
-    //static host_info get_host_by_address(const address & addr);
+    static host_info get_host_by_address(const address & addr);
 };
 
 }

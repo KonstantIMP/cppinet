@@ -47,20 +47,6 @@ public:
     std::string get_host_name() const;
 
     /**
-     * @brief Gets the aliases number.
-     *
-     * @return The aliases number.
-     */
-    std::size_t get_aliases_num() const;
-
-    /**
-     * @brief Gets the aliases vector.
-     *
-     * @return Vector with address aliases.
-     */
-    std::vector<std::string> get_aliases_vector() const;
-
-    /**
      * @brief Gets the connection family.
      *
      * @return The connection family type from KonstantIMP::CONNECTION_FAMILY .
@@ -68,18 +54,11 @@ public:
     CONNECTION_FAMILY get_connection_family() const;
 
     /**
-     * @brief Gets the addresses number.
+     * @brief Gets the address.
      *
-     * @return The addresses of host number.
+     * @return The address of host.
      */
-    std::size_t get_addresses_num() const;
-
-    /**
-     * @brief Gets the addresses vector.
-     *
-     * @return Vector with hosts addresses.
-     */
-    std::vector<std::string> get_addresses_vector();
+    std::string get_address() const;
 
     /**
      * @brief Assignment operator.
@@ -91,30 +70,15 @@ public:
     friend class dns;
 
 private:
-#ifdef   __linux
-    /**
-     * @brief Constructs a new instance.
-     *
-     * Set all data from DNS probe for linux
-     *
-     * @param[in] hi Linux host info struct
-     */
-    host_info(const hostent * hi);
-
-#elif  //__linux
-
-#endif //__linux
+    host_info(const std::string & host_n, const std::string & host_a, const CONNECTION_FAMILY & con);
 
 private:
     //// Host name
     std::string host_name;
+    /// Host address
+    std::string host_addr;
     //// Connection family
     CONNECTION_FAMILY con_fam;
-    //// Vector with hosts aliases
-    std::vector<std::string> aliases;
-    //// Vector with hosts addresses
-    std::vector<std::string> addresses;
-
 };
 
 }

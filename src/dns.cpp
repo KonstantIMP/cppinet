@@ -76,7 +76,26 @@ std::vector<std::shared_ptr<address>> dns::get_address_by_name(const std::string
 
     #elif  // __linux
 
-    #endif // __linux
+#endif // __linux
+}
+
+host_info dns::get_host_by_address(const address & addr) {
+    #ifdef __linux
+    char nbuf[1025]; std::memset(nbuf, 0, 1025);
+    getnameinfo(reinterpret_cast<sockaddr *>(addr.get_sys_addr().get()), addr.get_sys_addr_size(), nbuf, 1025, nullptr, 0, 0);
+
+    std::string address = "";
+    if(addr.get_con_fam() == IPV4_SOCKET) {
+        address = ipv4_address(&addr).get_ip_address();
+    }
+    else {
+        //address = ipv6_address(&addr).get_ip_address();
+    }
+
+    return host_info(nbuf, address, addr.get_con_fam());
+    #elif
+
+    #endif
 }
 
 }
