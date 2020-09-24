@@ -60,7 +60,8 @@ std::shared_ptr<char> ipv4_address::get_sys_addr() const {
     sockaddr_in * tmp = new sockaddr_in;
     std::memset(tmp, 0, sizeof (sockaddr_in));
 
-    tmp->sin_port = con_port.get_as_network();
+    tmp->sin_family = IPV4_SOCKET;
+    tmp->sin_port = port::host_to_network_short(con_port.get_as_host());
     tmp->sin_family = static_cast<int>(con_fam);
 
     if(inet_aton(ip_address.c_str(), &tmp->sin_addr) == 0) throw std::runtime_error('\'' + ip_address + "\' is incorrect IP address");

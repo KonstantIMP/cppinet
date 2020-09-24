@@ -37,7 +37,7 @@ namespace KonstantIMP {
      *
      * It uses system socket API to open, close, read and write sockets.
      */
-    class socket;
+    class u_socket;
     
     /**
      * @brief This class describes am intenet port.

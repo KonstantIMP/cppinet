@@ -1,25 +1,21 @@
 #include <iostream>
 
+#include "../include/socket.hpp"
 #include "../include/dns.hpp"
-#include "../include/address.hpp"
-
-#include <memory>
-
 
 int main() {
-    auto a = KonstantIMP::dns::get_address_by_name("lr-in-f101.1e100.net");
+    KonstantIMP::u_socket t;
 
-    std::cout << "google.com\n";
+    t.open(KonstantIMP::IPV4_SOCKET, KonstantIMP::STREAM_SOCKET);
 
-    for(auto & iter : a) {
-        KonstantIMP::ipv4_address c(iter.get());
+    KonstantIMP::address * me = new KonstantIMP::ipv4_address("127.0.0.1", KonstantIMP::port(3425));
 
-        std::cout << '\t' << c.get_ip_address() << ':' << c.get_port().get_as_host() << '\n';
-    }
+    t.connect_to(std::shared_ptr<KonstantIMP::address>(std::shared_ptr<KonstantIMP::address>(me)));
 
-    KonstantIMP::host_info g = KonstantIMP::dns::get_host_by_address(*a.at(0).get());
+    //std::cout << KonstantIMP::port::network_to_host_short(reinterpret_cast<sockaddr_in *>(me->get_sys_addr().get())->sin_port) << '\n';
+    //std::cout << inet_ntoa(reinterpret_cast<sockaddr_in *>(me->get_sys_addr().get())->sin_addr) << '\n';
 
-    std::cout << g.get_host_name() << '\n';
+    t.close_s();
 
     return 0;
 }
