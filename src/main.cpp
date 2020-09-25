@@ -10,10 +10,16 @@ int main() {
 
     KonstantIMP::address * me = new KonstantIMP::ipv4_address("127.0.0.1", KonstantIMP::port(3425));
 
-    t.connect_to(std::shared_ptr<KonstantIMP::address>(std::shared_ptr<KonstantIMP::address>(me)));
+    t.connect_to(std::shared_ptr<KonstantIMP::address>(me));
 
-    //std::cout << KonstantIMP::port::network_to_host_short(reinterpret_cast<sockaddr_in *>(me->get_sys_addr().get())->sin_port) << '\n';
-    //std::cout << inet_ntoa(reinterpret_cast<sockaddr_in *>(me->get_sys_addr().get())->sin_addr) << '\n';
+    char buf[10]; std::memset(buf, 0, 10);
+    std::strcpy(buf, "Woof!\r\n");
+
+    std::cout << t.send_packet(buf, sizeof (buf)) << '\n';
+
+    std::memset(buf, 0, 10);
+
+    std::cout << t.recieve_packet(buf, 5) << ' ' << buf;
 
     t.close_s();
 

@@ -28,11 +28,11 @@ public:
 
     virtual void connect_to(const std::shared_ptr<address> & binded_addr);
 
-    //virtual std::size_t send_packet(const char * msg, const std::size_t & msg_size);
-    //virtual std::size_t recieve_packet(char * data, const std::size_t & data_size);
+    virtual std::size_t send_packet(const char * msg, const std::size_t & msg_size);
+    virtual std::size_t recieve_packet(char * data, const std::size_t & data_size);
 
-    //virtual void send_line(const std::string & msg);
-    //virtual std::string recieve_line();
+    virtual void send_line(const std::string & msg);
+    virtual std::string recieve_line(const bool & save_rn = false);
 
     virtual void shutdown_s();
     virtual void close_s();

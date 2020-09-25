@@ -107,6 +107,168 @@ void u_socket::connect_to(const std::shared_ptr<address> & binded_addr) {
 #endif
 }
 
+std::size_t u_socket::send_packet(const char * msg, const std::size_t & msg_size) {
+#ifdef __linux
+    if(sock_fd == 0) throw socket_err("Socket hasn\'t opened yet");
+    std::size_t sended_b = 0, need_to_send(msg_size);
+    char * tmp_ptr = const_cast<char *>(msg);
+
+    while(need_to_send && (sended_b != msg_size)) {
+        if(tmp_ptr[0] == '\0') break;
+        int e = send(sock_fd, tmp_ptr, 1, 0);
+
+        if(e == -1) {
+            switch (errno) {
+                case EACCES : throw socket_err("Write permission is  denied"); break;
+                case EAGAIN : throw socket_err("The  requested  operation  would  block, because the socket is nonblocking"); break;
+                case EALREADY : throw socket_err("Another Fast Open is in progress"); break;
+                case EBADF : throw socket_err("Socket deskriptor is file deskriptoe?"); break;
+                case ECONNRESET : throw socket_err("Connection reset by peer"); break;
+                case EDESTADDRREQ : throw socket_err("The socket is not connection-mode, and no peer address is set"); break;
+                case EFAULT : throw socket_err("An invalid user space address was specified for an argument"); break;
+                case EINTR : throw socket_err("A signal occurred before any  data  was  transmitted"); break;
+                case EINVAL : throw socket_err("Invalid argument passed"); break;
+                case EISCONN : throw socket_err("The connection-mode socket was connected already but a recipient was specified"); break;
+                case EMSGSIZE : throw socket_err("The size of the message to be sent made this impossible"); break;
+                case ENOBUFS : throw socket_err("The output queue for a network interface was full"); break;
+                case ENOMEM : throw socket_err("No memory available"); break;
+                case ENOTCONN : throw socket_err("The socket is not connected"); break;
+                case ENOTSOCK : throw socket_err("Socket deskriptor is file deskriptoe?"); break;
+                case EOPNOTSUPP : throw socket_err("Incorrects flags"); break;
+                case EPIPE : throw socket_err("The  local  end  has  been  shut  down  on a connection oriented socket"); break;
+                default: throw socket_err("Undefined error"); break;
+            }
+        }
+
+        sended_b++; need_to_send--; tmp_ptr++;
+    }
+
+    return sended_b;
+
+#elif
+
+#endif
+}
+
+std::size_t u_socket::recieve_packet(char * data, const std::size_t & data_size) {
+#ifdef __linux
+    if(sock_fd == 0) throw socket_err("Socket hasn\'t opened yet");
+
+    std::size_t recieved_b = 0; char * tmp_ptr = data;
+
+    for(std::size_t i{0}; i < data_size; i++) {
+        int e = recv(sock_fd, tmp_ptr, 1, 0);
+
+        if(e == 0) break;
+        if(e == -1) {
+            switch (errno) {
+                case EAGAIN : throw socket_err("The  requested  operation  would  block, because the socket is nonblocking"); break;
+                case EBADF : throw socket_err("Socket deskriptor is file deskriptoe?"); break;
+                case ECONNREFUSED : throw socket_err("A remote host refused to allow the network connection"); break;
+                case EFAULT : throw socket_err("An invalid user space address was specified for an argument"); break;
+                case EINTR : throw socket_err("A signal occurred before any  data  was  transmitted"); break;
+                case EINVAL : throw socket_err("Invalid argument passed"); break;
+                case ENOMEM : throw socket_err("No memory available"); break;
+                case ENOTCONN : throw socket_err("The socket is not connected"); break;
+                case ENOTSOCK : throw socket_err("Socket deskriptor is file deskriptoe?"); break;
+                default: throw socket_err("Undefined error"); break;
+            }
+        }
+
+        if(tmp_ptr[0] == '\0') break;
+
+        recieved_b++; tmp_ptr++;
+    }
+
+    return recieved_b;
+#elif
+
+#endif
+}
+
+void u_socket::send_line(const std::string & msg) {
+    #ifdef __linux
+        if(sock_fd == 0) throw socket_err("Socket hasn\'t opened yet");
+
+        int sent_b{0}; std::size_t need_to_sent{msg.length() + 2};
+
+        std::string tmp = msg + "\r\n";
+
+        while (need_to_sent) {
+            sent_b = send(sock_fd, tmp.c_str(), need_to_sent, 0);
+
+            if(sent_b == -1) {
+                switch (errno) {
+                    case EACCES : throw socket_err("Write permission is  denied"); break;
+                    case EAGAIN : throw socket_err("The  requested  operation  would  block, because the socket is nonblocking"); break;
+                    case EALREADY : throw socket_err("Another Fast Open is in progress"); break;
+                    case EBADF : throw socket_err("Socket deskriptor is file deskriptoe?"); break;
+                    case ECONNRESET : throw socket_err("Connection reset by peer"); break;
+                    case EDESTADDRREQ : throw socket_err("The socket is not connection-mode, and no peer address is set"); break;
+                    case EFAULT : throw socket_err("An invalid user space address was specified for an argument"); break;
+                    case EINTR : throw socket_err("A signal occurred before any  data  was  transmitted"); break;
+                    case EINVAL : throw socket_err("Invalid argument passed"); break;
+                    case EISCONN : throw socket_err("The connection-mode socket was connected already but a recipient was specified"); break;
+                    case EMSGSIZE : throw socket_err("The size of the message to be sent made this impossible"); break;
+                    case ENOBUFS : throw socket_err("The output queue for a network interface was full"); break;
+                    case ENOMEM : throw socket_err("No memory available"); break;
+                    case ENOTCONN : throw socket_err("The socket is not connected"); break;
+                    case ENOTSOCK : throw socket_err("Socket deskriptor is file deskriptoe?"); break;
+                    case EOPNOTSUPP : throw socket_err("Incorrects flags"); break;
+                    case EPIPE : throw socket_err("The  local  end  has  been  shut  down  on a connection oriented socket"); break;
+                    default: throw socket_err("Undefined error"); break;
+                }
+            }
+
+            need_to_sent -= static_cast<std::size_t>(sent_b);
+            tmp = tmp.substr(sent_b);
+        }
+    #elif
+
+#endif
+}
+
+std::string u_socket::recieve_line(const bool & save_rn) {
+#ifdef __linux
+    std::string res = "";
+
+    char buf[2]; std::memset(buf, 0, 2);
+
+    while (1) {
+        int recv_b = recv(sock_fd, buf, 1, 0);
+
+        if(recv_b == 0) break;
+        if(recv_b == -1) {
+            switch (errno) {
+                case EAGAIN : throw socket_err("The  requested  operation  would  block, because the socket is nonblocking"); break;
+                case EBADF : throw socket_err("Socket deskriptor is file deskriptoe?"); break;
+                case ECONNREFUSED : throw socket_err("A remote host refused to allow the network connection"); break;
+                case EFAULT : throw socket_err("An invalid user space address was specified for an argument"); break;
+                case EINTR : throw socket_err("A signal occurred before any  data  was  transmitted"); break;
+                case EINVAL : throw socket_err("Invalid argument passed"); break;
+                case ENOMEM : throw socket_err("No memory available"); break;
+                case ENOTCONN : throw socket_err("The socket is not connected"); break;
+                case ENOTSOCK : throw socket_err("Socket deskriptor is file deskriptoe?"); break;
+                default: throw socket_err("Undefined error"); break;
+            }
+        }
+
+        res += buf[0];
+
+        if(buf[0] == '\n') break;
+    }
+
+    if(save_rn == false) {
+        if(res.at(res.length() - 1) == '\n') res = res.substr(0, res.length() - 1);
+        if(res.at(res.length() - 1) == '\r') res = res.substr(0, res.length() - 1);
+    }
+
+    return res;
+#elif
+
+#endif
+}
+
 void u_socket::shutdown_s() {
 #ifdef __linux
 
@@ -114,10 +276,23 @@ void u_socket::shutdown_s() {
 
     if(shutdown(sock_fd, SHUT_RDWR) == -1) {
         switch (errno) {
-            case EBADF : throw socket_err("Incorrect socket descriptor"); break;
             case EINVAL : throw socket_err("Incorrect arguments"); break;
-            case ENOTCONN : throw socket_err("Socket hasn\'t been connected yet"); break;
+            case EPERM : throw socket_err("Socket broadcast didn\'t enabled"); break;
+            case EADDRINUSE : throw socket_err("Local address is already in use"); break;
+            case EADDRNOTAVAIL : throw socket_err("Socket had not previously been bound"); break;
+            case EAFNOSUPPORT : throw socket_err("Connected address have incorrect connection family"); break;
+            case EAGAIN : throw socket_err("Connection cannot be completed immediately"); break;
+            case EALREADY : throw socket_err("Previous connection has not yet been completed"); break;
+            case EBADF : throw socket_err("Socket deskriptor is file deskriptoe?"); break;
+            case ECONNREFUSED : throw socket_err("Socket is being listened or had remote access"); break;
+            case EFAULT : throw socket_err("Address class is ouside user space"); break;
+            case EINPROGRESS : throw socket_err("Connection cannot be completed immediately"); break;
+            case EINTR : throw socket_err("System call was inerrupted"); break;
+            case EISCONN : throw socket_err("The socket is already connected"); break;
+            case ENETUNREACH : throw socket_err("Network is unreachable"); break;
             case ENOTSOCK : throw socket_err("Socket deskriptor is file deskriptoe?"); break;
+            case EPROTOTYPE : throw socket_err("The socket does not support  the  requested  communications protocol"); break;
+            case ETIMEDOUT : throw socket_err("Timeout while attempting connection"); break;
             default: throw socket_err("Undefined error"); break;
         }
     }
