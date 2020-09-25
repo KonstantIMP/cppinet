@@ -2,7 +2,7 @@
 
 namespace KonstantIMP {
 
-host_info::host_info() : host_name("localhost"), host_addr("127.0.0.1"), con_fam(LOCAL_SOCKET) {}
+host_info::host_info() : host_name("localhost"), host_addr("127.0.0.1"), con_fam(UNSPEC_SOCKET) {}
 
 host_info::host_info(const host_info & copy) {
     this->operator=(copy);

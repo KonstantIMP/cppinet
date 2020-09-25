@@ -19,7 +19,7 @@ extern int errno;
 
 namespace KonstantIMP {
 
-u_socket::u_socket() {
+u_socket::u_socket() : addr_info(nullptr) {
     #ifdef __linux
 
     con_fam = KonstantIMP::CONNECTION_FAMILY::UNSPEC_SOCKET;
@@ -71,13 +71,24 @@ void u_socket::bind_to(const std::shared_ptr<address> & binded_addr) {
 
     if(bind(sock_fd, reinterpret_cast<sockaddr *>(binded_addr->get_sys_addr().get()), binded_addr->get_sys_addr_size()) == -1) {
         switch (errno) {
-            case EBADF : throw socket_err("Incorrect socket descriptor"); break;
-            case EINVAL : throw socket_err("Socket have already binded"); break;
             case EACCES : throw socket_err("You don\'t have acces to create socket"); break;
+            case EINVAL : throw socket_err("Incorrect arguments"); break;
+            case ELOOP : throw socket_err("Too many symbolic links were encountered in resolving addr"); break;
+            case ENAMETOOLONG : throw socket_err("addr is too long"); break;
+            case ENOENT : throw socket_err("A  component in the directory prefix of the socket pathname does not exist"); break;
+            case EADDRINUSE : throw socket_err("Local address is already in use"); break;
+            case EADDRNOTAVAIL : throw socket_err("Socket had not previously been bound"); break;
+            case ENOMEM : throw socket_err("No memory available"); break;
+            case ENOTDIR : throw socket_err("A component of the path prefix is not a directory"); break;
+            case EROFS : throw socket_err("The socket inode would reside on a read-only filesystem"); break;
+            case EBADF : throw socket_err("Socket deskriptor is file deskriptoe?"); break;
+            case EFAULT : throw socket_err("Address class is ouside user space"); break;
             case ENOTSOCK : throw socket_err("Socket deskriptor is file deskriptoe?"); break;
             default: throw socket_err("Undefined error"); break;
         }
     }
+
+    addr_info = binded_addr;
 
     #elif
 
@@ -102,6 +113,7 @@ void u_socket::connect_to(const std::shared_ptr<address> & binded_addr) {
         }
     }
 
+    addr_info = binded_addr;
 #elif
 
 #endif
@@ -323,6 +335,29 @@ void u_socket::close_s() {
 #elif
 
 #endif
+}
+
+void u_socket::set_opt(const int & opt_level, const int & opt_name, void * opt_data, const std::size_t & opt_len) {
+#ifdef __linux
+    if(sock_fd == 0) throw socket_err("Socket hasn\'t opened yet");
+
+    if(setsockopt(sock_fd, opt_level, opt_name, opt_data, opt_len) == -1) {
+        switch (errno) {
+            case EINVAL : throw socket_err("Incorrect arguments"); break;
+            case EBADF : throw socket_err("Socket deskriptor is file deskriptoe?"); break;
+            case EFAULT : throw socket_err("Address class is ouside user space"); break;
+            case ENOPROTOOPT : throw socket_err("The option is unknown at the level indicated"); break;
+            case ENOTSOCK : throw socket_err("Socket deskriptor is file deskriptoe?"); break;
+            default: throw socket_err("Undefined error"); break;
+        }
+    }
+#elif
+
+#endif
+}
+
+std::shared_ptr<address> u_socket::get_addr_inf() const {
+    return addr_info;
 }
 
 }

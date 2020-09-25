@@ -37,7 +37,13 @@ public:
     virtual void shutdown_s();
     virtual void close_s();
 
+    virtual void set_opt(const int & opt_level, const int & opt_name, void * opt_data, const std::size_t & opt_len = sizeof (int));
+
+    std::shared_ptr<address> get_addr_inf() const;
+
 private:
+    std::shared_ptr<address> addr_info;
+
     #ifdef __linux
 
     CONNECTION_FAMILY con_fam;
