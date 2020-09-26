@@ -34,6 +34,10 @@ public:
     virtual void send_line(const std::string & msg);
     virtual std::string recieve_line(const bool & save_rn = false);
 
+    virtual void listen_socket(const std::size_t & queue_size);
+
+    virtual std::shared_ptr<u_socket> accept_connection();
+
     virtual void shutdown_s();
     virtual void close_s();
 

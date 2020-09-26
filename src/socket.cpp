@@ -281,6 +281,56 @@ std::string u_socket::recieve_line(const bool & save_rn) {
 #endif
 }
 
+void u_socket::listen_socket(const std::size_t & queue_size) {
+#ifdef __linux
+    if(sock_fd == 0) throw socket_err("Socket hasn\'t opened yet");
+
+    if(listen(sock_fd, queue_size) == -1) {
+        switch (errno) {
+            case EADDRINUSE : throw socket_err("Local address is already in use"); break;
+            case EOPNOTSUPP : throw socket_err("The socket is not of a type that supports the listen() operation"); break;
+            case EBADF : throw socket_err("Socket deskriptor is file deskriptoe?"); break;
+            case ENOTSOCK : throw socket_err("Socket deskriptor is file deskriptoe?"); break;
+            default: throw socket_err("Undefined error"); break;
+        }
+    }
+#elif
+
+#endif
+}
+
+std::shared_ptr<u_socket> u_socket::accept_connection() {
+#ifdef __linux
+    if(sock_fd == 0) throw socket_err("Socket hasn\'t opened yet");
+
+    if(con_fam == IPV4_SOCKET) {
+        sockaddr_in client_info; socklen_t sockadd_in_size = sizeof (sockaddr_in);
+        std::memset(&client_info, 0, sockadd_in_size);
+
+        int new_sock_fd = accept(sock_fd, reinterpret_cast<sockaddr *>(&client_info), &sockadd_in_size);
+
+        if(new_sock_fd == -1) {
+
+        }
+
+        u_socket * client = new u_socket;
+        client->proto_num = proto_num;
+        client->sock_fd = new_sock_fd;
+        client->con_fam = con_fam;
+        client->sock_t = sock_t;
+
+        client->addr_info = std::shared_ptr<address>(new ipv4_address(inet_ntoa(client_info.sin_addr), port::network_to_host_short(client_info.sin_port)));
+
+        return std::shared_ptr<u_socket>(client);
+    }
+    else {
+
+    }
+#elif
+
+#endif
+}
+
 void u_socket::shutdown_s() {
 #ifdef __linux
 
